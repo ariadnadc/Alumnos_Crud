@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD de Alumnos</title>
+    <script defer src="/app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #eaeaea;
+        }
+        h1, h2 {
+            color: #5e4b8c; /* Color morado */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #d6c8e0; /* Color de fondo de encabezado */
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input {
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #6f2c91; /* Color morado para el botón */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5e4b8c; /* Color morado más oscuro al pasar el mouse */
+        }
+        .delete-button {
+            background-color: #dc3545; /* Color rojo para el botón de eliminar */
+        }
+        .delete-button:hover {
+            background-color: #c82333; /* Color rojo más oscuro al pasar el mouse */
+        }
+        .modify-button {
+            background-color: #D8BFD8; /* Color lila para el botón de modificar */
+        }
+        .modify-button:hover {
+            background-color: #DDA0DD; /* Color lila más oscuro al pasar el mouse */
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de Alumnos</h1>
+    
+    <!-- Formulario de Filtrado -->
+    <form id="filtrar-form">
+        <input type="text" id="filtro-nombre" placeholder="Nombre">
+        <input type="text" id="filtro-apellido" placeholder="Apellido">
+        <select id="filtro-sexo">
+            <option value="">Seleccione sexo</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Sexo</th>
+                <th>Lenguaje Favorito</th>
+                <th>Promedio Primaria</th>
+                <th>Promedio Secundaria</th>
+                <th>Promedio Preparatoria</th>
+                <th>Promedio Actual</th>
+                <th>Salario Esperado</th>
+                <th>Color Favorito</th>
+                <th>Marca Ropa</th>
+                <th>Marca Celular</th>
+                <th>Materia Favorita</th>
+                <th>Acciones</th> <!-- Agregamos una columna para acciones -->
+            </tr>
+        </thead>
+        <tbody id="alumnos-table"></tbody>
+    </table>
+    
+    <h2>Agregar Alumno</h2>
+    <form id="alumno-form">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" placeholder="Apellido" required>
+        <input type="date" id="fecha_nacimiento" placeholder="Fecha de Nacimiento" required>
+        <input type="text" id="sexo" placeholder="Sexo" required>
+        <input type="text" id="lenguaje_favorito" placeholder="Lenguaje Favorito" required>
+        <input type="number" id="promedio_primaria" placeholder="Promedio Primaria" step="0.01" required>
+        <input type="number" id="promedio_secundaria" placeholder="Promedio Secundaria" step="0.01" required>
+        <input type="number" id="promedio_preparatoria" placeholder="Promedio Preparatoria" step="0.01" required>
+        <input type="number" id="promedio_actual" placeholder="Promedio Actual" step="0.01" required>
+        <input type="text" id="salario_esperado" placeholder="Salario Esperado" required>
+        <input type="text" id="color_favorito" placeholder="Color Favorito" required>
+        <input type="text" id="marca_ropa" placeholder="Marca Ropa" required>
+        <input type="text" id="marca_celular" placeholder="Marca Celular" required>
+        <input type="text" id="materia_favorita" placeholder="Materia Favorita" required>
+        <button type="submit">Agregar</button>
+    </form>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            obtenerAlumnos();
+            document.getElementById("alumno-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+                agregarAlumno();
+            });
+            document.getElementById("filtrar-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+                filtrarDatos();
+            });
+        });
+        function obtenerAlumnos(params = '') {
+            fetch(`/datos${params}`)  
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById("alumnos-table");
+                    tableBody.innerHTML = "";
+                    data.forEach(alumno => {
+                        let row = `
+                            <td>${alumno[0]}</td>  
+                            <td>${alumno[1]}</td>  
+                            <td>${alumno[2]}</td>  
+                            <td>${alumno[3]}</td>  
+                            <td>${alumno[4]}</td>  
+                            <td>${alumno[5]}</td>  
+                            <td>${alumno[6]}</td>  
+                            <td>${alumno[7]}</td>  
+                            <td>${alumno[8]}</td>  
+                            <td>${alumno[9]}</td>  
+                            <td>${alumno[10]}</td>  
+                            <td>${alumno[11]}</td>  
+                            <td>${alumno[12]}</td>  
+                            <td>${alumno[13]}</td>  
+                            <td>${alumno[14]}</td>  
+                            <td>
+                                <button class="modify-button" onclick="editarAlumno(${alumno[0]})">Modificar</button>
+                                <button class="delete-button" onclick="eliminarAlumno(${alumno[0]})">Eliminar</button>
+                            </td>
+                         `;
+                        tableBody.innerHTML += row;
+                    });
+                });
+        }
+        function agregarAlumno() {
+            const nombre = document.getElementById("nombre").value;
+            const apellido = document.getElementById("apellido").value;
+            const fecha_nacimiento = document.getElementById("fecha_nacimiento").value;
+            const sexo = document.getElementById("sexo").value;
+            const lenguaje_favorito = document.getElementById("lenguaje_favorito").value;
+            const promedio_primaria = document.getElementById("promedio_primaria").value;
+            const promedio_secundaria = document.getElementById("promedio_secundaria").value;
+            const promedio_preparatoria = document.getElementById("promedio_preparatoria").value;
+            const promedio_actual = document.getElementById("promedio_actual").value;
+            const salario_esperado = document.getElementById("salario_esperado").value;
+            const color_favorito = document.getElementById("color_favorito").value;
+            const marca_ropa = document.getElementById("marca_ropa").value;
+            const marca_celular = document.getElementById("marca_celular").value;
+            const materia_favorita = document.getElementById("materia_favorita").value;
+            fetch("/datos", {  
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre, apellido, fecha_nacimiento, sexo, lenguaje_favorito, promedio_primaria, promedio_secundaria, promedio_preparatoria, promedio_actual, salario_esperado, color_favorito, marca_ropa, marca_celular, materia_favorita })
+            })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById("alumno-form").reset();
+                obtenerAlumnos();
+            });
+        }
+        function eliminarAlumno(id) {
+            fetch(`/datos/${id}`, { method: "DELETE" })  
+                .then(response => response.json())
+                .then(() => obtenerAlumnos());
+        }
+        function editarAlumno(id) {
+            const nombre = prompt("Nuevo nombre:");
+            const apellido = prompt("Nuevo apellido:");
+            const fecha_nacimiento = prompt("Nueva fecha de nacimiento:");
+            const sexo = prompt("Nuevo sexo:");
+            const lenguaje_favorito = prompt("Nuevo lenguaje favorito:");
+            const promedio_primaria = prompt("Nuevo promedio de primaria:");
+            const promedio_secundaria = prompt("Nuevo promedio de secundaria:");
+            const promedio_preparatoria = prompt("Nuevo promedio de preparatoria:");
+            const promedio_actual = prompt("Nuevo promedio actual:");
+            const salario_esperado = prompt("Nuevo salario esperado:");
+            const color_favorito = prompt("Nuevo color favorito:");
+            const marca_ropa = prompt("Nueva marca de ropa:");
+            const marca_celular = prompt("Nueva marca de celular:");
+            const materia_favorita = prompt("Nueva materia favorita:");
+            const data = {
+                nombre, apellido, fecha_nacimiento, sexo, lenguaje_favorito, promedio_primaria, promedio_secundaria, promedio_preparatoria, promedio_actual, salario_esperado, color_favorito, marca_ropa, marca_celular, materia_favorita
+            };
+            fetch(`/datos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    obtenerAlumnos(); 
+                } else {
+                    alert('Error al actualizar el dato');
+                }
+            });
+        }
+        function filtrarDatos() {
+            const nombre = document.getElementById("filtro-nombre").value;
+            const apellido = document.getElementById("filtro-apellido").value;
+            const params = new URLSearchParams();
+            if (nombre) params.append('nombre', nombre);
+            if (apellido) params.append('apellido', apellido);
+            obtenerAlumnos(`?${params.toString()}`);
+        }
+    </script>
+</body>
+</html>
